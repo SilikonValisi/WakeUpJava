@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         Button add = findViewById(R.id.add);
         editText = findViewById (R.id.editText);
         ListView listView = (ListView) findViewById (R.id.listView);
+        listView.setChoiceMode(listView.CHOICE_MODE_MULTIPLE);
         Button delete = findViewById (R.id.delete);
         Button clear = findViewById(R.id.clear);
 
@@ -44,17 +46,29 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         adapter = new AlarmAdapter (MainActivity.this, android.
         R.layout.simple_list_item_multiple_choice, itemlist);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                AlarmItem alarmItem = itemlist.get(i);
+
+                if (alarmItem.isSelected)
+                    alarmItem.isSelected = false;
+                else{
+                    alarmItem.isSelected = true;
+                }
+
+                itemlist.set(i, alarmItem);
+                adapter.notifyDataSetChanged();
+            }
+        });
         add.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View view) {
 
                    TimePickerFragment timePicker =  new TimePickerFragment();
                    timePicker.show(getSupportFragmentManager(),"time picker");
-//                   itemlist.add(editText.getText().toString());
-//                   listView.setAdapter(adapter);
-//                   adapter.notifyDataSetChanged();
-//                   // This is because every time when you add the item the input      space or the eidt text space will be cleared
-//                   editText.getText().clear();
                }
            }
         );
@@ -66,13 +80,17 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View view) {
                 SparseBooleanArray position = listView.getCheckedItemPositions();
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                Intent intent = new Intent(getApplicationContext(),AlertReceiver.class);
 
                 //todo: delete cancel selected alarms
                 Integer count = listView.getCount();
                 int item = count - 1;
                 while (item >= 0) {
                 if (position.get(item)) {
-//                    itemlist.remove(item);
+                    Integer alarmId = itemlist.get(item).alarmId;
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),alarmId , intent, PendingIntent.FLAG_MUTABLE);
+                    alarmManager.cancel(pendingIntent);
                     adapter.remove(itemlist.get(item));
                 }
                 item--;
@@ -119,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         AtomicInteger atomicInteger = new AtomicInteger();
         Integer alarmId=atomicInteger.incrementAndGet();
 
-        AlarmItem newAlarmItem = new AlarmItem(alarmId,editText.getText().toString()+" : "+ DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime()));
+        AlarmItem newAlarmItem = new AlarmItem(alarmId,editText.getText().toString()+" : "+ DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime()),false);
         itemlist.add(newAlarmItem);
         adapter.notifyDataSetChanged();
 

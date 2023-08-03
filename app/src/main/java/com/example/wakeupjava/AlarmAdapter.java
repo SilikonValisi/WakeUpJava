@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,8 +35,16 @@ public class AlarmAdapter extends ArrayAdapter<AlarmItem> {
         }
 
         // Lookup view for data population
-        TextView tvName = (TextView) convertView.findViewById(R.id.description);
-        tvName.setText(alarmItem.description);
+        TextView description = (TextView) convertView.findViewById(R.id.description);
+        ImageView checkBox = (ImageView) convertView.findViewById(R.id.iv_check_box);
+        description.setText(alarmItem.description);
+        if(alarmItem.isSelected){
+            checkBox.setBackgroundResource(R.drawable.checked);
+        }else{
+            checkBox.setBackgroundResource(R.drawable.check);
+        }
         return convertView;
     }
+
+
 }
