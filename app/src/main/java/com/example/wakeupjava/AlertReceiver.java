@@ -8,5 +8,8 @@ public class AlertReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         System.out.println("ALARM IS RINGING");
+        Intent secondActivity = new Intent(context,SecondActivity.class);
+        secondActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(secondActivity);
     }
 }

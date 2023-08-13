@@ -105,17 +105,21 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                Intent intent = new Intent(getApplicationContext(),AlertReceiver.class);
-                //todo: change the flag
-                for(int i=0;i<itemlist.size();i++){
-                    Integer alarmId = itemlist.get(i).alarmId;
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),alarmId , intent, PendingIntent.FLAG_MUTABLE);
-                    alarmManager.cancel(pendingIntent);
+//                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//                Intent intent = new Intent(getApplicationContext(),AlertReceiver.class);
+//                //todo: change the flag
+//                for(int i=0;i<itemlist.size();i++){
+//                    Integer alarmId = itemlist.get(i).alarmId;
+//                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),alarmId , intent, PendingIntent.FLAG_MUTABLE);
+//                    alarmManager.cancel(pendingIntent);
+//
+//                }
+//                itemlist.clear();
+//                adapter.notifyDataSetChanged();
 
-                }
-                itemlist.clear();
-                adapter.notifyDataSetChanged();
+                Intent secondActivity = new Intent(getApplicationContext(),SecondActivity.class);
+                secondActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(secondActivity);
             }
         });
     }
@@ -130,10 +134,9 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
     }
 
-    public void updateListView(Calendar calendar){
-
-    }
     public void startAlarm(Calendar calendar){
+
+
         AtomicInteger atomicInteger = new AtomicInteger();
         Integer alarmId=atomicInteger.incrementAndGet();
 
